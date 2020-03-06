@@ -1,5 +1,5 @@
 #include <iostream>
-#include <chrono>
+#include <vector>
 
 using namespace std;
 
@@ -42,10 +42,49 @@ public:
         }
     }
 
+    //ToDo enter matrix from string
+//    Matrix(int numOfRows, int numOfColumns, string &in){
+//        int i = 0, j = 0;
+//        string temp;
+//
+//        this->rows = numOfRows;
+//        this->columns = numOfColumns;
+//        this->array = new double *[this->rows];
+//        for (int i = 0; i < this->rows; ++i) {
+//            this->array[i] = new double[this->columns];
+//        }
+//
+//        for (int k = 0; k < in.size(); ++k) {
+//            if(in[k] == ' ') {
+//                this->array[i][j] = temp;
+//                temp = "";
+//                i++;
+//            }
+//            else if (in[k] == '\n') j++;
+//            else temp+=in[k];
+//        }
+//
+//
+//    }
+//
+//    double stringToDouble(string input){
+//
+//        for (int i = 0; i < input.size(); ++i) {
+//
+//        }
+//    }
+//
+//    int pow10(int step){
+//        int result = 1;
+//        for (int i = 1; i < step+1; ++i) {
+//            result*=10;
+//        }
+//        return result;
+//    }
 
-    Matrix operator+(const Matrix &matrix2) {
+    Matrix * operator+(const Matrix *secondMatrix) {
         try {
-            if (rows != matrix2.rows || columns != matrix2.columns) throw;
+            if (rows != secondMatrix->rows || columns != secondMatrix->columns) throw;
         } catch (exception &e) {
             cout << "nums of rows or columns are not equal";
         }
@@ -53,38 +92,28 @@ public:
 
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
-                temp->array[i][j] = this->array[i][j] + matrix2.array[i][j];
+                temp->array[i][j] = this->array[i][j] + secondMatrix->array[i][j];
             }
         }
-
-        return *temp;
-    }
-
-    Matrix operator*(const Matrix &b) {
-
-    }
-
-//    Matrix operator=(const Matrix& matrix2) {
-//        try {
-//           if (this->rows != matrix2.rows || this->columns != matrix2.columns) throw ;
-//        }catch (exception& e){
-//            cout << "nums of rows or columns are not equal";
-//        }
-//
-//        for (int i = 0; i < this->rows; ++i) {
-//            for (int j = 0; j < this->columns; ++j) {
-//                this->array[i][j] = matrix2.array[i][j];
-//            }
-//        }
-//        this->columns = matrix2.columns;
-//        this->rows = matrix2.rows;
-//        return *this;
-//    }
-
-    Matrix *copy() {
-        Matrix *temp = new Matrix(this->rows, this->columns, this->array);
         return temp;
+    }
 
+    Matrix * operator*(const Matrix *secondMatrix) {
+        if (this->columns != secondMatrix->rows && this->rows != secondMatrix->columns)return new Matrix(1, 1);
+        double sum = 0;
+        Matrix *result = new Matrix(this->columns, this->rows);
+
+        for (int k = 0; k < this->rows; ++k) {
+            for (int i = 0; i < this->columns; ++i) {
+                for (int j = 0; j < secondMatrix->columns; ++j) {
+                    sum += this->array[k][j] * secondMatrix->array[j][i];
+                }
+                result->array[k][i] = sum;
+                sum = 0;
+            }
+
+        }
+        return result;
     }
 
     string out() {
@@ -99,8 +128,24 @@ public:
         return result+'\n';
     }
 
-    Matrix get(int row, int col) {
+    double get(int row, int col) {
 
+    }
+
+    Matrix * getMinor(int rowForDeleting, int columnForDeleting){
+        Matrix *result = new Matrix(this->rows-1, this->columns-1);
+        for (int i = 0, i1 = 0; i < this->rows; i++) {
+            if (i != rowForDeleting){
+                for (int j = 0, j1 = 0; j < this->columns; j++) {
+                    if (j != columnForDeleting){
+                        result->array[i1][j1] = this->array[i][j];
+                        j1++;
+                    }
+                }
+                i1++;
+            }
+        }
+        return result;
     }
 
     int columns{};
@@ -110,10 +155,11 @@ public:
     double determine() {
         int n = this->rows, originalN = n;
 
+        if (n == 1)return this->array[0][0];
+        else if (n<1) return 0;
+
         Matrix *temp;
         Matrix *arr = new Matrix(*this);
-//        std::cout << temp->out();
-//        std::cout << arr->out();
 
         int key;
         double coef, result = 1;
@@ -128,100 +174,102 @@ public:
                     for (int j = 1; j < n; ++j) arr->array[j][i] -= coef * arr->array[j][key];
                 }
             }
-
-            temp = new Matrix(n - 1, n - 1);
-            for (int l = 1; l < n; ++l) {
-                for (int i = 0, j = 0; j < n-1; ++i, j++) {
+            n--;
+            temp = new Matrix(n, n);
+            for (int l = 1; l < n+1; ++l) {
+                for (int i = 0, j = 0; j < n; ++i, j++) {
                     if (i == key) i++;
                     temp->array[l - 1][j] = arr->array[l][i];
                 }
             }
-
-            n--;
             arr = new Matrix(*temp);
         }
-        return result * (temp->array[0][0] * temp->array[1][1] - temp->array[0][1] * temp->array[1][0]);
+        return result * (arr->array[0][0] * arr->array[1][1] - arr->array[0][1] * arr->array[1][0]);
+    }
+
+    Matrix * transposition(){
+        auto result = new Matrix(this->rows, this->columns);
+        for (int i = 0; i < this->rows; ++i) {
+            for (int j = 0; j < this->columns; ++j) {
+                result->array[j][i] = this->array[i][j];
+            }
+        }
+        return result;
+    }
+
+    Matrix * inverseMatrix(){
+        Matrix *result = new Matrix(this->rows, this->columns);
+        double det = this->determine();
+        for (int i = 0; i < this->rows; ++i) {
+            for (int j = 0; j < this->columns; ++j) {
+                result->array[i][j] = ((i+j)%2==1?-1:1) * this->getMinor(i, j)->determine()/det;
+            }
+        }
+        return result->transposition();
     }
 
 
 };
 
 int main() {
-    int n = 4, originalN = n;
+    int n = 3;
+    double **arr1 = new double*[n];
+    double **arr2 = new double*[n];
+    double **arr3 = new double*[n];
+    srand(1);
+    for (int i = 0; i < n; ++i) {
+        arr1[i] = new double [n];
 
-    double **arr = new double *[n];
-    arr[0] = new double[n]{2, -4, -9, -5};
-    arr[1] = new double[n]{1, 3, 5, -1};
-    arr[2] = new double[n]{2, -5, 0, 9};
-    arr[3] = new double[n]{-2, 0, -1, 1};
-
-    Matrix *matr = new Matrix(4, 4, arr);
-    std::cout << matr->out()<< matr->determine();
-
-//    Matrix *matr2 = new Matrix(1, 1);
-
-    //
-//    matr2 = new Matrix(*matr);
-//    std::cout << matr2->out();
-//
-//    auto matr3 = new Matrix(*matr2);
-//    std::cout << matr2->out();
-
-
-    srand(time(0));
-
-    auto t1 = std::chrono::high_resolution_clock::now();
-
-    int key;
-    double coef, result = 1;
-    for (int k = 0; k < originalN - 2; ++k) {
-        key = 0;
-        while (!arr[0][key]) key++;
-        if (key % 2) result = -result;
-        result *= arr[0][key];
-        for (int i = key + 1; i < n; ++i) {
-            if (arr[0][i] != 0) {
-                coef = arr[0][i] / arr[0][key];
-                for (int j = 1; j < n; ++j) arr[j][i] -= coef * arr[j][key];
-            }
+        for (int j = 0; j < n; ++j) {
+            arr1[i][j] = rand()%10;
         }
+    }
+    srand(2);
 
-        double **temp = new double *[n - 1];
-        for (int j = 0; j < n; ++j) temp[j] = new double[n - 1];
+    for (int i = 0; i < n; ++i) {
+        arr2[i] = new double [n];
 
-        for (int l = 1; l < n; ++l) {
-            for (int i = 0, j = 0; j < n; ++i, j++) {
-                if (i == key) i++;
-                temp[l - 1][j] = arr[l][i];
-            }
+        for (int j = 0; j < n; ++j) {
+            arr2[i][j] = rand()%10;
         }
+    }
+    srand(3);
 
-        n--;
-        for (int i = 0; i < n; ++i) arr[i] = new double[n];
-        for (int m = 0; m < n; ++m) {
-            for (int i = 0; i < n; ++i) {
-                arr[m][i] = temp[m][i];
-//                cout << arr[m][i]<<"  ";
-            }
-//            cout << endl;
+    for (int i = 0; i < n; ++i) {
+        arr3[i] = new double [n];
+
+        for (int j = 0; j < n; ++j) {
+            arr3[i][j] = rand()%10;
         }
-//        cout << "koeff = " << result;
-//        cout << endl << endl;
     }
 
-//    cout << "____________________________" << endl;
+    Matrix *matr1 = new Matrix(n, n, arr1);
+    Matrix *matr2 = new Matrix(n, n, arr2);
+    Matrix *matr3 = new Matrix(n, n, arr3);
 
-//    for (int i = 0; i < n; ++i) {
-//        for (int j = 0; j < n; ++j) {
-//            cout << arr[i][j] << "  ";
-//        }
-//        cout << endl;
-//    }
+    cout << matr1->out();
+    cout << matr2->out();
+    cout << matr3->out();
 
-    auto t2 = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-//    cout << "determine = " << result * (arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0]);
-//    cout << endl << duration;
+    Matrix *matrSum = *matr1 + matr2;
+
+    Matrix *matrMult = *matr1 * matr2;
+
+    cout << matrSum->out();
+    cout << matrMult->out();
+
+    cout << matrMult->getMinor(2, 2)->out();
+
+    Matrix *minor = matrMult->getMinor(2, 2);
+    cout << minor->out();
+
+    cout << minor->determine() << endl;
+
+    Matrix *inv = minor->inverseMatrix();
+    cout << inv->out();
+
+    cout << "result\n" << (*minor*inv)->out();
+
     return 0;
 }
 
