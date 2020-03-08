@@ -9,6 +9,10 @@
 /home/artemy/CLionProjects/Determinant/main.cpp
 iostream
 -
+utility
+-
 vector
+-
+bits/stdc++.h
 -
 

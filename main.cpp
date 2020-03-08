@@ -1,5 +1,7 @@
 #include <iostream>
+#include <utility>
 #include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -58,45 +60,130 @@ public:
         }
     }
 
-    //ToDo enter matrix from string
-//    Matrix(int numOfRows, int numOfColumns, string &in){
-//        int i = 0, j = 0;
-//        string temp;
-//
-//        this->rows = numOfRows;
-//        this->columns = numOfColumns;
-//        this->array = new double *[this->rows];
-//        for (int i = 0; i < this->rows; ++i) {
-//            this->array[i] = new double[this->columns];
-//        }
-//
-//        for (int k = 0; k < in.size(); ++k) {
-//            if(in[k] == ' ') {
-//                this->array[i][j] = temp;
-//                temp = "";
+    Matrix(int numOfRows, int numOfColumns, string in) {
+
+        this->rows = numOfRows;
+        this->columns = numOfColumns;
+        this->array = new double *[this->rows];
+        for (int l = 0; l < this->rows; ++l) {
+            this->array[l] = new double[this->columns];
+        }
+
+        int i = 0, j = 0;
+        string temp;
+        if (in[0] == '-' || (in[0] > '0' && in[0] <= '9')) {
+            in = standartFormat(in);
+        } else if (in[0] == '{' || in[0] == '(' || in[0] == '[') {
+            cout << "this function will be added in future\n";
+//            in = bracketsFormat(in);
+        } else {
+            cout << "i can't understand this format,"
+                    "pishy normal'no, po shablonu. Ili ya tebya naidu i vivernu pal'cy v druguu storonu. Understand?";
+        }
+
+        for (int k = 0; k < in.length(); ++k) {
+            if (in[k] == ' ') {
+                this->array[j][i] = stringToDouble(temp);
+                temp = "";
+                i++;
+            } else if (in[k] == '\n') {
+                this->array[j][i] = stringToDouble(temp);
+                i = 0;
+                temp = "";
+                j++;
+            } else temp += in[k];
+        }
+
+    }
+
+    string standartFormat(string input) {
+        string num, result;
+        int rows = 0, columns = 0;
+        int start = 0, end = input.length();
+        while ((input[start] < '0' || input[start] > '9') && input[start]!='-') start++;
+        while (input[end] < '0' || input[end] > '9') end--;
+        for (int i = start; i <= end; ++i) {
+            if ((input[i] < '0' || input[i] > '9') && input[i] != '-' && input[i] != '.') {
+                result += num + " ";
+                columns++;
+                num = "";
+                if (columns == this->columns) {
+                    result += '\n';
+                    columns = 0;
+                }
+            } else num += input[i];
+        }
+        result += num + " ";
+        return result;
+    }
+
+// Todo Reading from string in brackets format
+
+//    string bracketsFormat(string input) {
+//        string result, num;
+//        int i = 0, start = 0, end = input.length() - 1, columns = 0;
+//        while (input[start] != '{' && input[start] != '(' && input[start] != '[') start++;
+//        while (input[end] != '}' && input[end] != ')' && input[end] != ']') end--;
+//        try {
+//            if (start >= end) throw 5;
+//            stack<char> brackets;
+//            i = start;
+//            while (i <= end) {
+//                if (input[i] == '{' || input[i] == '[' || input[i] == '(') {
+//                    brackets.push(input[i]);
+//                } else if (input[i] == '}' && brackets.top() == '{') brackets.pop();
+//                else if (input[i] == ']' && brackets.top() == '[') brackets.pop();
+//                else if (input[i] == ')' && brackets.top() == '(') brackets.pop();
+//                else if ((input[i] == ',' || input[i] == ' ') && num.length() > 0) {
+//                    if (columns != this->columns) {
+//                        columns++;
+//                    } else {
+//                        columns = 0;
+//                        result += '\n';
+//                    }
+//                    result += num + " ";
+//                    num = "";
+//                } else if ((input[i] > '0' && input[i] <= '9') || input[i] == '.') {
+//                    num += input[i];
+//                }
 //                i++;
 //            }
-//            else if (in[k] == '\n') j++;
-//            else temp+=in[k];
+//            if(!brackets.empty()) throw 5;
+//        } catch (int error) {
+//            if (error == 5) cout << "some error in format of input string. Maybe you are forget bracket";
+//            exit(error);
 //        }
-//
-//
-//    }
-//
-//    double stringToDouble(string input){
-//
-//        for (int i = 0; i < input.size(); ++i) {
-//
-//        }
-//    }
-//
-//    int pow10(int step){
-//        int result = 1;
-//        for (int i = 1; i < step+1; ++i) {
-//            result*=10;
-//        }
+//        cout << result;
 //        return result;
 //    }
+//
+    double stringToDouble(string &input) {
+        double result = 0;
+        int nums = 0;
+        bool positive = true;
+
+        if (input[0] == '-') {
+            nums++;
+            positive = false;
+        }
+        while (input[nums] != '.' && input[nums] != ',' && nums < input.length()) nums++;
+        for (int i = positive ? 0 : 1; i < nums; ++i) {
+            result += (input[i] - '0') * pow10(nums - i - 1);
+        }
+        for (int j = nums + 1; j < input.length(); ++j) {
+            result += double(input[j] - '0') / pow10(j - nums);
+        }
+        if (positive) return result;
+        return -result;
+    }
+
+    int pow10(int step) {
+        int result = 1;
+        for (int i = 1; i < step + 1; ++i) {
+            result *= 10;
+        }
+        return result;
+    }
 
     Matrix *operator+(const Matrix *secondMatrix) {
         try {
@@ -277,34 +364,15 @@ public:
 };
 
 int main() {
-    double **arr = new double *[1];
-    arr[0] = new double[1]{6};
-    Matrix *zero = new Matrix(1, 1, arr);
+    string str1 = "4 1 -3 2";
+    string str2 = "1 -5 6 -2";
+    string str3 = "-3 4 2 -4";
 
-    double **arr1 = new double *[4];
-    arr1[0] = new double[4]{4, 1, 0, 4};
-    arr1[1] = new double[4]{-3, 2, 9, 5};
-    arr1[2] = new double[4]{-7, 8, 12, 5};
-    arr1[3] = new double[4]{4, 2, 6, 0};
-    Matrix *matr1 = new Matrix(4, 4, arr1);
+    auto *matr1 = new Matrix(2, 2, str1);
+    auto *matr2 = new Matrix(2, 2, str2);
+    auto *matr3 = new Matrix(2, 2, str3);
 
-    double **arr2 = new double *[2];
-    arr2[0] = new double[2]{1, -5};
-    arr2[1] = new double[2]{6, -2};
-    Matrix *matr2 = new Matrix(2, 2, arr2);
-
-    double **arr3 = new double *[2];
-    arr3[0] = new double[3]{-3, 4, 2};
-    arr3[1] = new double[3]{2, -4, 7};
-//    arr3[2] = new double [3]{5, 3, 8};
-
-    Matrix *matr3 = new Matrix(2, 3, arr3);
-
-    cout << matr1->determine();
-//    *matr3*matr3;
-//    matr1->getMinor(0, 3);
-//    cout << matr2->inverseMatrix()->out() << matr2->out() << (*matr2->inverseMatrix() * matr2)->out();
-
+    cout << matr1->out() << matr2->out() << matr3->out();
     return 0;
 }
 
