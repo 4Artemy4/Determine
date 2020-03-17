@@ -84,6 +84,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/artemy/CLionProjects/Determinant/Matrix.cpp">
+			<Option target="Determinant"/>
+		</Unit>
+		<Unit filename="/home/artemy/CLionProjects/Determinant/Matrix.h">
+			<Option target="Determinant"/>
+		</Unit>
 		<Unit filename="/home/artemy/CLionProjects/Determinant/main.cpp">
 			<Option target="Determinant"/>
 		</Unit>

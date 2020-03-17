@@ -74,12 +74,12 @@ preinstall:
 CMakeFiles/Determinant.dir/all:
 	$(MAKE) -f CMakeFiles/Determinant.dir/build.make CMakeFiles/Determinant.dir/depend
 	$(MAKE) -f CMakeFiles/Determinant.dir/build.make CMakeFiles/Determinant.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/artemy/CLionProjects/Determinant/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target Determinant"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/artemy/CLionProjects/Determinant/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target Determinant"
 .PHONY : CMakeFiles/Determinant.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Determinant.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/artemy/CLionProjects/Determinant/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/artemy/CLionProjects/Determinant/cmake-build-debug/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Determinant.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/artemy/CLionProjects/Determinant/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/Determinant.dir/rule

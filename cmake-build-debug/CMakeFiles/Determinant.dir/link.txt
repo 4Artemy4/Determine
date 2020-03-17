@@ -1,1 +1,1 @@
-/usr/bin/g++  -g   CMakeFiles/Determinant.dir/main.cpp.o  -o Determinant 
+/usr/bin/g++  -g   CMakeFiles/Determinant.dir/main.cpp.o CMakeFiles/Determinant.dir/Matrix.cpp.o  -o Determinant 

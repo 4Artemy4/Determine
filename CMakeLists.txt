@@ -3,4 +3,4 @@ project(Determinant)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Determinant main.cpp)
+add_executable(Determinant main.cpp Matrix.cpp Matrix.h)
