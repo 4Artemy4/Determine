@@ -1,4 +1,4 @@
 # Determine
-Determine (matrix)
+Matrix 
 IDE - Clion
 Compiler - GCC C++ (g++)
